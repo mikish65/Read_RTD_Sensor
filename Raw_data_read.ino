@@ -10,13 +10,10 @@
 
 // Function to initialize SPI
 void SPI_init() {
-    // Set PB0 (CS), PB1 (SCLK), PB2 (MOSI) as output
+    // Setting pins as output
     DDRB |= (1 << CS_PIN) | (1 << SCLK_PIN) | (1 << PB2);  
-
-    // Set CS high to deactivate ADC
-    PORTB |= (1 << CS_PIN);  
-
-    // Enable SPI, Master mode, fosc/16 clock
+    PORTB |= (1 << CS_PIN);    
+    
     SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR0);
     SPSR &= ~(1 << SPI2X);  // No double speed
 }
@@ -26,22 +23,18 @@ uint16_t read_ADC() {
     uint8_t high_byte, low_byte;
     uint16_t adc_value;
 
-    // Activate ADC
-    PORTB &= ~(1 << CS_PIN);
-    _delay_us(5);  // Small delay before SPI read
-
-    // Send dummy byte to receive first byte
-    SPDR = 0x00;
+    PORTB &= ~(1 << CS_PIN); // Activating ADC
+    _delay_us(5);  
+   
+    SPDR = 0x00;  // Send dummy byte
     while (!(SPSR & (1 << SPIF)));
     high_byte = SPDR;
-
-    // Send dummy byte to receive second byte
-    SPDR = 0x00;
+   
+    SPDR = 0x00;  // Send another dummy byte 
     while (!(SPSR & (1 << SPIF)));
     low_byte = SPDR;
-
-    // Deactivate ADC
-    PORTB |= (1 << CS_PIN);
+   
+    PORTB |= (1 << CS_PIN);  // Deactivating ADC
 
     // Convert to 12-bit value
     adc_value = ((high_byte << 8) | low_byte) >> 4;
@@ -53,10 +46,8 @@ uint16_t read_ADC() {
 void select_mux_channel(uint8_t channel) {
     DDRC |= (1 << MUX_S0) | (1 << MUX_S1);  // Set PC0, PC1 as outputs
 
-    // Clear both bits
     PORTC &= ~((1 << MUX_S0) | (1 << MUX_S1));
 
-    // Set bits based on channel number
     if (channel & 0x01) PORTC |= (1 << MUX_S0);
     if (channel & 0x02) PORTC |= (1 << MUX_S1);
 }
@@ -68,8 +59,6 @@ int main(void) {
 
     while (1) {
         uint16_t adc_result = read_ADC();  // Read raw 12-bit data from ADC
-
-        // Use adc_result as needed (e.g., store, send, or process)
         _delay_ms(1000);
     }
 }
