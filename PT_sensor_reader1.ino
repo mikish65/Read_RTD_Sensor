@@ -9,7 +9,7 @@
 #define MUX_S0    PC0     
 #define MUX_S1    PC1     
 
-// Function Prototypes
+// Functions used
 void SPI_init();
 uint16_t read_ADC();
 void select_mux_channel(uint8_t channel);
@@ -41,7 +41,7 @@ uint16_t read_ADC() {
     while (!(SPSR & (1 << SPIF)));
     low_byte = SPDR;
 
-    PORTB |= (1 << CS_PIN);       // Deactivate CS
+    PORTB |= (1 << CS_PIN);       // Deactivating CS
 
     adc_value = ((high_byte << 8) | low_byte) >> 4;
     return adc_value;
