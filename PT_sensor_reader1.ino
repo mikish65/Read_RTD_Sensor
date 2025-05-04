@@ -36,7 +36,7 @@ void SPI_init() {
 }
 
 uint16_t read_ADC() {
-    uint8_t high_byte, low_byte;
+    uint8_t high_byte, low_byte;  
     uint16_t adc_value;
 
     PORTB &= ~(1 << CS_PIN);      // Activate CS
@@ -64,10 +64,10 @@ void select_mux_channel(uint8_t channel) {
 }
 
 float calculate_temperature(uint16_t adc_raw, uint16_t r_ref, uint16_t r0) {
-    float v_ref = 5.0;
-    float v_adc = (adc_raw / 4095.0f) * v_ref;
-    float resistance = (v_adc * r_ref) / (v_ref - v_adc);
-    float temp = (resistance - r0) / 0.00385f;
+    float v_ref = 5.0; //Reference voltage set at 5V
+    float v_adc = (adc_raw / 4095.0f) * v_ref; // Convert raw digital ADV data value (adv_raw) to voltage. ADC is 12bit, so values range 0-4095
+    float resistance = (v_adc * r_ref) / (v_ref - v_adc); //volatge divider formula to give resistance value of RTD 
+    float temp = (resistance - r0) / 0.00385f; //Callender-Van Dusen eqtn, temp coeefficeint, alpha = 0.00385; r0 = 100/ r0=1000;
     return temp;
 }
 
