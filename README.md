@@ -1,6 +1,6 @@
 # Read_RTD_Sensor
 ## Overview
-This repository contains three C++ files for the demonstration of SPI communication initialization measurement and conversion of Resistance Temperature Detector sensor data. Also present are proteus and pdf files which depict the circuitry diagram for the operation of the code. 
+This repository contains three C files for the demonstration of SPI communication initialization measurement and conversion of Resistance Temperature Detector sensor data. Also present are proteus and pdf files which depict the circuitry diagram for the operation of the code. 
 
 ## Objective
 Read temperature data from two RTD sensors (PT100 and PT1000) via a multiplexer, then digitize it using an external SPI ADC (AD7352) and send the digital readings to the ATmega128 microcontroller.
