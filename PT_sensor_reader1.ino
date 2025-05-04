@@ -1,6 +1,13 @@
-#include <avr/io.h>
-#include <util/delay.h>
-#include <stdio.h>
+// Final code. Does the following operations: 
+//     SPI initialization -- SPI_init()
+//     Read ADC reaw digital data -- read_ADC()
+//     Select Multiplexer channel -- select_mux_channel()
+//     Convert raw data to temperature reading -- calculate_temperature()     
+
+// Headers
+#include <avr/io.h> // Access ATMega register definitions for its pins e.g Pc0 
+#include <util/delay.h> // For enabling delay functions for delaying time
+#include <stdio.h> // For formatting strings sent via UART
 
 // Constants
 #define CS_PIN    PB0     
@@ -9,18 +16,20 @@
 #define MUX_S0    PC0     
 #define MUX_S1    PC1     
 
-// Functions used
+// Functions 
 void SPI_init();
 uint16_t read_ADC();
 void select_mux_channel(uint8_t channel);
 float calculate_temperature(uint16_t adc_raw, uint16_t r_ref, uint16_t r0);
 
 // UART init and send functions
+// UART is initailized solely for the purpose of interfacing the MCU with the virtual terminal in the simulation or practically with a computer
+// The communication between the MCU and ADC is left to the SPI protocol
 void UART_init(uint16_t baud);
 void UART_send_string(const char *str);
 
 void SPI_init() {
-    DDRB |= (1 << CS_PIN) | (1 << SCLK_PIN) | (1 << MOSI_PIN);
+    DDRB |= (1 << CS_PIN) | (1 << SCLK_PIN) | (1 << MOSI_PIN); 
     PORTB |= (1 << CS_PIN);  // Deselect ADC
     SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR0);
     SPSR &= ~(1 << SPI2X);
@@ -82,7 +91,7 @@ int main(void) {
     SPI_init();
     UART_init(9600);
 
-    while (1) {
+    while (1) { 
         // Read PT100
         select_mux_channel(0);
         _delay_ms(10);
