@@ -11,7 +11,7 @@ void SPI_init() {
     // Set MOSI (PB2), SCK (PB1), CS (PB0) as output
     DDRB |= (1 << PB2) | (1 << PB1) | (1 << CS_PIN);
 
-    // Set CS high (ADC inactive)
+    // Set CS high, deactivates ADC
     PORTB |= (1 << CS_PIN);
 
     // Enable SPI peripheral and configure pins
@@ -39,7 +39,7 @@ uint16_t read_ADC() {
     low_byte = SPDR;
 
     
-    PORTB |= (1 << CS_PIN); // Deactivate ADC 
+    PORTB |= (1 << CS_PIN); // Deactivating ADC 
 
     // Combine to 12-bit result (AD7352 gives left-aligned 16-bit output)
     adc_value = ((high_byte << 8) | low_byte) >> 4;
@@ -48,24 +48,20 @@ uint16_t read_ADC() {
 }
 
 void select_mux_channel(uint8_t channel) {
-    // Configure MUX S0 (PC0), S1 (PC1) as output
-    DDRC |= (1 << MUX_S0) | (1 << MUX_S1);
+    DDRC |= (1 << MUX_S0) | (1 << MUX_S1);   // Configuring pins as output
 
     // Clear both bits first
     PORTC &= ~((1 << MUX_S0) | (1 << MUX_S1));
 
-    if (channel & 0x01) PORTC |= (1 << MUX_S0); // Bit 0
-    if (channel & 0x02) PORTC |= (1 << MUX_S1); // Bit 1
+    if (channel & 0x01) PORTC |= (1 << MUX_S0); 
+    if (channel & 0x02) PORTC |= (1 << MUX_S1); 
 }
 
 int main(void) {
     SPI_init();
-    select_mux_channel(0); // Start with channel 0 (e.g., PT100)
+    select_mux_channel(0); // Start with channel 0 which is PT100
 
     while (1) {
         uint16_t adc_result = read_ADC();
-
-        // You can send adc_result over UART here if needed
-        _delay_ms(1000);  // Delay before next read
     }
 }
